@@ -10,7 +10,7 @@ AS=$(TARGET)-as
 ASFLAGS=
 
 KERNEL_DEBUG=bin/debug/kernel.bin
-KERNELOBJ=start.o main.o
+KERNELOBJ=start.o main.o serial.o asm.o math.o
 
 MKDIR=mkdir
 

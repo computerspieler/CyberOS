@@ -4,29 +4,6 @@
 #include "typedef.h"
 
 typedef struct Multiboot_Header Multiboot_Header;
-typedef struct Multiboot_VBE_Header Multiboot_VBE_Header;
-typedef struct Multiboot_Video_Header Multiboot_Video_Header;
-
-struct Multiboot_VBE_Header
-{
-	u32 control_info;
-	u32 mode_info;
-	u16 mode;
-	u16 interface_seg;
-	u16 interface_off;
-	u16 interface_len;
-};
-
-struct Multiboot_Video_Header
-{
-	u64 addr;
-	u32 pitch;
-	u32 width;
-	u32 height;
-	u8 bpp;
-	u8 type;
-	u8 color_info[5];
-};
 
 struct Multiboot_Header
 {
@@ -55,8 +32,26 @@ struct Multiboot_Header
 	u32 boot_loader_name;
 	u32 apm_table;
 	
-	Multiboot_VBE_Header vbe;
-	Multiboot_Video_Header video;
-};
+	union
+	{
+		u32 control_info;
+		u32 mode_info;
+		u16 mode;
+		u16 interface_seg;
+		u16 interface_off;
+		u16 interface_len;
+	} vbe;
+
+	union
+	{
+		u64 addr;
+		u32 pitch;
+		u32 width;
+		u32 height;
+		u8 bpp;
+		u8 type;
+		u8 color_info[5];
+	} video;
+} __attribute__((packed));
 
 #endif
