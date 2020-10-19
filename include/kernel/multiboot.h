@@ -3,10 +3,20 @@
 
 #include "typedef.h"
 
+typedef enum Multiboot_Memory_Map_Entry_Type Multiboot_Memory_Map_Entry_Type;
+
 typedef struct Multiboot_Info Multiboot_Info;
 typedef struct Multiboot_Memory_Map_Entry Multiboot_Memory_Map_Entry;
 typedef struct Multiboot_ELF_Header_Table Multiboot_ELF_Header_Table;
 typedef struct Multiboot_A_Out_Symbol_Table Multiboot_A_Out_Symbol_Table;
+
+enum Multiboot_Memory_Map_Entry_Type
+{
+	Available_Memory		 = 1,
+	Memory_Holding_ACPI_Data = 3,
+	Memory_To_Preserve		 = 4,
+	Defective_Memory		 = 5,
+};
 
 struct Multiboot_A_Out_Symbol_Table
 {
