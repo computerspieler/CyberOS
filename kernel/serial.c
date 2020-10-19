@@ -1,7 +1,7 @@
+#include "typedef.h"
+
 #include "kernel/asm.h"
 #include "kernel/serial.h"
-#include "math.h"
-#include "typedef.h"
 
 #define NB_SERIAL_PORTS 2
 int serial_io_ports[] = {

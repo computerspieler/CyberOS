@@ -15,7 +15,7 @@ ARFLAGS=rcs
 LIB_DEBUG=bin/debug/lib.a
 
 KERNEL_DEBUG=bin/debug/kernel.bin
-KERNELOBJ=start.o main.o serial.o asm.o
+KERNELOBJ=start.o main.o serial.o asm.o gdt.o idt.o interrupt.o
 
 LIBOBJ=math.o
 
@@ -33,8 +33,9 @@ bin:
 	$(MKDIR) bin/debug/lib
 	$(MKDIR) bin/release/lib
 
-debug-run: debug
-	qemu-system-i386 -m 32M -kernel $(KERNEL_DEBUG) -serial stdio
+debug-qemu: debug
+	qemu-system-i386 -m 32M -kernel $(KERNEL_DEBUG) -serial stdio -s -S &
+	gdb -x gdb_commands
 
 debug: bin $(LIB_DEBUG) $(KERNEL_DEBUG)
 

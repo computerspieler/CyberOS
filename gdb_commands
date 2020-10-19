@@ -1,0 +1,3 @@
+file bin/debug/kernel.bin
+target remote localhost:1234
+continue

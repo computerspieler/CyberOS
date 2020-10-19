@@ -13,5 +13,4 @@ enum bool
 	false = 0
 };
 
-
 #endif
