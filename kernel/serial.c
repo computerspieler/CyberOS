@@ -13,7 +13,8 @@ void serial_init()
 {
 	int i;
 	u16 divisor = 3;
-	for(i = 0; i < NB_SERIAL_PORTS; i++) {
+	for(i = 0; i < NB_SERIAL_PORTS; i++)
+	{
 		outb(serial_io_ports[i] + 1, 0x00);
 		outb(serial_io_ports[i] + 3, 0x80);
 
@@ -26,25 +27,25 @@ void serial_init()
 	}
 }
 
-void serial_send_value(int port, int base, int value)
+void serial_send_value(int port, u8 base, u32 value)
 {
-	int value_backup;
 	int nb_characters;
 	char number_to_print;
+	long reversed_value;
 
-	value_backup = value;
 	do {
 		nb_characters ++;
+		reversed_value *= base;
+		reversed_value += (value % base);
 		value /= base;
 	} while(value != 0);
 
-	value = value_backup;
-
 	while(nb_characters > 0) {
-		nb_characters --;
-		number_to_print = value / pow(base, nb_characters) % base;
+		number_to_print = reversed_value % base;
+		reversed_value /= base;
 
 		serial_send_char(port, number_to_print + (number_to_print < 10 ? '0' : 'A' - 10));
+		nb_characters --;
 	}
 }
 

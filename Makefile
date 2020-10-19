@@ -32,7 +32,7 @@ debug: bin $(KERNEL_DEBUG)
 $(KERNEL_DEBUG): $(patsubst %.o,bin/debug/kernel/%.o,$(KERNELOBJ))
 	$(LD) $(LDFLAGS) -g -T kernel/linker.ld $^ -o $@
 
-bin/debug/kernel/%.o: kernel/%.c include/*.h
+bin/debug/kernel/%.o: kernel/%.c include/*.h include/kernel/*.h
 	$(CC) $(CCFLAGS) -g -o $@ $<
 
 bin/debug/kernel/%.o: kernel/%.s
