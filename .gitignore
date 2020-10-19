@@ -1,0 +1,4 @@
+bin/*
+toolchain/*
+
+!toolchain/build.sh
