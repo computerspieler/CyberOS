@@ -3,6 +3,8 @@
 
 #include "typedef.h"
 
+#define NB_IDT_ENTRIES 256
+
 typedef u64 IDT_Entry;
 typedef struct IDT_Descriptor IDT_Descriptor;
 

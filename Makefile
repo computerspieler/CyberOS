@@ -15,7 +15,7 @@ ARFLAGS=rcs
 LIB_DEBUG=bin/debug/lib.a
 
 KERNEL_DEBUG=bin/debug/kernel.bin
-KERNELOBJ=start.o main.o serial.o asm.o gdt.o idt.o interrupt.o
+KERNELOBJ=start.o main.o serial.o asm.o gdt.o idt.o interrupt.o pic.o
 
 LIBOBJ=math.o
 
