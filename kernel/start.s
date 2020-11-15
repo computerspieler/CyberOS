@@ -39,7 +39,7 @@ stack_top:
 .type start, @function
 start:
 	mov $stack_top, %EBP
-	mov $stack_top, %ESP
+	mov %EBP, %ESP
 
 	push %EAX
 	push %EBX

@@ -29,9 +29,9 @@ void serial_init()
 
 void serial_send_value(int port, u8 base, u32 value)
 {
-	int nb_characters;
+	int nb_characters = 0;
 	char number_to_print;
-	long reversed_value;
+	long reversed_value = 0;
 
 	do {
 		nb_characters ++;

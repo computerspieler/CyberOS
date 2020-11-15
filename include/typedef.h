@@ -13,4 +13,6 @@ enum bool
 	false = 0
 };
 
+#define NULL 0
+
 #endif
