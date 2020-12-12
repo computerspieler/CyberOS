@@ -2,7 +2,6 @@
 
 #include "kernel/idt.h"
 #include "kernel/interrupt.h"
-#include "kernel/irq_handler.h"
 #include "kernel/multiboot.h"
 #include "kernel/serial.h"
 
@@ -15,7 +14,7 @@ void main(Multiboot_Info* info, u32 magic)
 {
 	serial_init();
 	interrupt_init();
-	/*
+
 	serial_send_string(0, "Magic number: ");
 	serial_send_value(0, 16, magic);
 
@@ -45,7 +44,6 @@ void main(Multiboot_Info* info, u32 magic)
 		serial_send_string(0, "; Type: ");
 		serial_send_value(0, 16, entry->type);
 	}
-	*/
 
 	asm("sti");
 	while(true);
@@ -53,49 +51,15 @@ void main(Multiboot_Info* info, u32 magic)
 
 void interrupt_init()
 {
+	extern u32* interrupt_table;
+	extern u32 interrupt_table_size;
+
 	int i;
 
-	for(i = 0; i < NB_IDT_ENTRIES; i++)
-		entries[i] = IDT_create_entry(0, 0, 0);
+	for(i = 0; i < interrupt_table_size / sizeof(u32); i++)
+		entries[i] = IDT_create_entry(0x08, &interrupt_table[i], 0x8E);
 
-	entries[0] = IDT_create_entry(0x08, (u32) irq0_handler_entry, 0x8E);
-	entries[1] = IDT_create_entry(0x08, (u32) irq1_handler_entry, 0x8E);
-	entries[2] = IDT_create_entry(0x08, (u32) irq2_handler_entry, 0x8E);
-	entries[3] = IDT_create_entry(0x08, (u32) irq3_handler_entry, 0x8E);
-	entries[4] = IDT_create_entry(0x08, (u32) irq4_handler_entry, 0x8E);
-	entries[5] = IDT_create_entry(0x08, (u32) irq5_handler_entry, 0x8E);
-	entries[6] = IDT_create_entry(0x08, (u32) irq6_handler_entry, 0x8E);
-	entries[7] = IDT_create_entry(0x08, (u32) irq7_handler_entry, 0x8E);
-	entries[8] = IDT_create_entry(0x08, (u32) irq8_handler_entry, 0x8E);
-	entries[9] = IDT_create_entry(0x08, (u32) irq9_handler_entry, 0x8E);
-
-	entries[10] = IDT_create_entry(0x08, (u32) irq10_handler_entry, 0x8E);
-	entries[11] = IDT_create_entry(0x08, (u32) irq11_handler_entry, 0x8E);
-	entries[12] = IDT_create_entry(0x08, (u32) irq12_handler_entry, 0x8E);
-	entries[13] = IDT_create_entry(0x08, (u32) irq13_handler_entry, 0x8E);
-	entries[14] = IDT_create_entry(0x08, (u32) irq14_handler_entry, 0x8E);
-	entries[15] = IDT_create_entry(0x08, (u32) irq15_handler_entry, 0x8E);
-	entries[16] = IDT_create_entry(0x08, (u32) irq16_handler_entry, 0x8E);
-	entries[17] = IDT_create_entry(0x08, (u32) irq17_handler_entry, 0x8E);
-	entries[18] = IDT_create_entry(0x08, (u32) irq18_handler_entry, 0x8E);
-	entries[19] = IDT_create_entry(0x08, (u32) irq19_handler_entry, 0x8E);
-
-	entries[20] = IDT_create_entry(0x08, (u32) irq20_handler_entry, 0x8E);
-	entries[21] = IDT_create_entry(0x08, (u32) irq21_handler_entry, 0x8E);
-	entries[22] = IDT_create_entry(0x08, (u32) irq22_handler_entry, 0x8E);
-	entries[23] = IDT_create_entry(0x08, (u32) irq23_handler_entry, 0x8E);
-	entries[24] = IDT_create_entry(0x08, (u32) irq24_handler_entry, 0x8E);
-	entries[25] = IDT_create_entry(0x08, (u32) irq25_handler_entry, 0x8E);
-	entries[26] = IDT_create_entry(0x08, (u32) irq26_handler_entry, 0x8E);
-	entries[27] = IDT_create_entry(0x08, (u32) irq27_handler_entry, 0x8E);
-	entries[28] = IDT_create_entry(0x08, (u32) irq28_handler_entry, 0x8E);
-	entries[29] = IDT_create_entry(0x08, (u32) irq29_handler_entry, 0x8E);
-
-	entries[30] = IDT_create_entry(0x08, (u32) irq30_handler_entry, 0x8E);
-	entries[31] = IDT_create_entry(0x08, (u32) irq31_handler_entry, 0x8E);
-	entries[32] = IDT_create_entry(0x08, (u32) irq32_handler_entry, 0x8E);
-
-	descriptor.address = &entries[0];
+	descriptor.address = entries;
 	descriptor.size = NB_IDT_ENTRIES * sizeof(IDT_Entry);
 
 	asm volatile("lidt (%0)" : : "r" (&descriptor));

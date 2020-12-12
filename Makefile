@@ -1,13 +1,13 @@
 TARGET=i686-elf
 
 CC=$(TARGET)-gcc
-CCFLAGS=-Wall -Wextra -ffreestanding -fno-exceptions -mgeneral-regs-only -c -Iinclude/
+CCFLAGS=-Wall -Wextra -ffreestanding -fno-exceptions -ggdb -mgeneral-regs-only -c -Iinclude/
 
 LD=$(TARGET)-gcc
 LDFLAGS=-ffreestanding -nostdlib -lgcc
 
 AS=$(TARGET)-as
-ASFLAGS=
+ASFLAGS=-ggdb
 
 AR=$(TARGET)-ar
 ARFLAGS=rcs
@@ -15,7 +15,7 @@ ARFLAGS=rcs
 LIB_DEBUG=bin/debug/lib.a
 
 KERNEL_DEBUG=bin/debug/kernel.bin
-KERNELOBJ=start.o main.o serial.o asm.o gdt.o idt.o interrupt.o pic.o
+KERNELOBJ=start.o main.o serial.o asm.o gdt.o irq.o idt.o interrupt.o pic.o
 
 LIBOBJ=math.o
 

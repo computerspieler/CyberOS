@@ -3,10 +3,10 @@
 #include "kernel/pic.h"
 #include "kernel/serial.h"
 
-void general_interrupt_handler(u32 irq_id, struct interrupt_frame* frame)
+void general_interrupt_handler(u32 irq_id)
 {
-	serial_send_string(0, "IRQ");
-	serial_send_value(0, 10, irq_id % 10);
+	serial_send_string(0, "IRQ no ");
+	serial_send_value(0, 10, irq_id);
 	serial_send_char(0, '\n');
 
 	if(irq_id >= 0x08 && irq_id <= 0x0F)
