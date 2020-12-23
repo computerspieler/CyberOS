@@ -1,56 +1,107 @@
-TARGET=i686-elf
+include config.Makefile
 
-CC=$(TARGET)-gcc
-CCFLAGS=-Wall -Wextra -ffreestanding -fno-exceptions -ggdb -mgeneral-regs-only -c -Iinclude/
+ifeq ($(TARGET_ARCHITECTURE),x86)
+	COMPILER_PREFIX=i686-elf
+endif
 
-LD=$(TARGET)-gcc
+ifeq ($(ENABLE_BUILD_NUMBER_SYSTEM),1)
+	BUILD_NUMBER=$(words $(wildcard binaries.$(TARGET_ARCHITECTURE).*) future_binary_folder)
+else
+	BUILD_NUMBER=0
+endif
+
+CC=@$(COMPILER_PREFIX)-gcc
+CCFLAGS=-Wall -Wextra -ffreestanding -fno-exceptions -mgeneral-regs-only -c -Iinclude/ -D BUILD_NO=$(BUILD_NUMBER)
+
+LD=@$(COMPILER_PREFIX)-gcc
 LDFLAGS=-ffreestanding -nostdlib -lgcc
 
-AS=$(TARGET)-as
-ASFLAGS=-ggdb
+AS=@$(COMPILER_PREFIX)-as
+ASFLAGS=
 
-AR=$(TARGET)-ar
+AR=@$(COMPILER_PREFIX)-ar
 ARFLAGS=rcs
 
-LIB_DEBUG=bin/debug/lib.a
+MKDIR=@mkdir -p
+DEL=@rm -rf
+ECHO=@echo
 
-KERNEL_DEBUG=bin/debug/kernel.bin
-KERNELOBJ=start.o main.o serial.o asm.o gdt.o irq.o idt.o interrupt.o pic.o
+ifneq ($(findstring debug,$(MAKECMDGOALS)),)
+	BUILD_TYPE=debug
+endif
 
-LIBOBJ=math.o
+ifneq ($(findstring release,$(MAKECMDGOALS)),)
+	BUILD_TYPE=release
+endif
 
-MKDIR=mkdir
+BINDIR=binaries.$(TARGET_ARCHITECTURE).$(BUILD_TYPE).$(BUILD_NUMBER)
+
+KERNELOBJ=$(patsubst kernel/%,$(BINDIR)/kernel/%.o, \
+	$(wildcard kernel/*.c) $(wildcard kernel/*.s) \
+	$(wildcard kernel/arch/$(TARGET_ARCHITECTURE)/*.c) \
+	$(wildcard kernel/arch/$(TARGET_ARCHITECTURE)/*.s) \
+)
+LIBOBJ=$(patsubst lib/%,$(BINDIR)/lib/%.o, \
+	$(wildcard lib/*.c) \
+)
+
+ifeq ($(ENABLE_BUILD_NUMBER_SYSTEM),1)
+	DEPFILES=
+else
+	DEPFILES=$(patsubst %.o,$(BINDIR)/kernel/%.d,$(KERNELOBJ)) \
+		$(patsubst %.o,$(BINDIR)/lib/%.d,$(LIBOBJ))
+endif
+
+ifeq ($(BUILD_TYPE),debug)
+	CCFLAGS+=-g -ggdb -O0
+	ASFLAGS+=-g -ggdb
+	LDFLAGS+=-g
+endif
+
+ifeq ($(BUILD_TYPE),release)
+	CCFLAGS+=-O2
+endif
+
+debug-run: build-img
+	$(ECHO) RUN
+	@./scripts/run.sh $(BINDIR) $(EMULATOR) $(BUILD_TYPE) $(TARGET_ARCHITECTURE)
+
+release-run: build-img
+	$(ECHO) RUN
+	@./scripts/run.sh $(BINDIR) $(EMULATOR) $(BUILD_TYPE) $(TARGET_ARCHITECTURE)
 
 clean:
-	rm -rf bin
+	$(ECHO) CLEAN binaries folders
+	$(DEL) binaries.*
 
-bin:
-	$(MKDIR) bin
-	$(MKDIR) bin/debug
-	$(MKDIR) bin/release
-	$(MKDIR) bin/debug/kernel
-	$(MKDIR) bin/release/kernel
-	$(MKDIR) bin/debug/lib
-	$(MKDIR) bin/release/lib
+build-img: $(BINDIR) $(BINDIR)/lib.a $(BINDIR)/kernel.bin
 
-debug-qemu: debug
-	qemu-system-i386 -m 32M -kernel $(KERNEL_DEBUG) -serial stdio -s -S &
-	gdb -x gdb_commands
+$(BINDIR):
+	$(ECHO) MKDIR build directories: $(BINDIR)
+	$(MKDIR) $(BINDIR)/boot/grub
+	$(MKDIR) $(BINDIR)/kernel
+	$(MKDIR) $(BINDIR)/kernel/arch/$(TARGET_ARCHITECTURE)
+	$(MKDIR) $(BINDIR)/lib
 
-debug: bin $(LIB_DEBUG) $(KERNEL_DEBUG)
+$(BINDIR)/kernel.bin: $(KERNELOBJ) $(BINDIR)/lib.a
+	$(ECHO) LINK $(patsubst $(BINDIR)/%,%,$@)
+	$(LD) $(LDFLAGS) -T kernel/linker.ld $^ -o $@
 
-$(KERNEL_DEBUG): $(patsubst %.o,bin/debug/kernel/%.o,$(KERNELOBJ)) $(LIB_DEBUG)
-	$(LD) $(LDFLAGS) -g -T kernel/linker.ld $^ -o $@
-
-bin/debug/kernel/%.o: kernel/%.c include/*.h include/kernel/*.h
-	$(CC) $(CCFLAGS) -g -o $@ $<
-
-bin/debug/kernel/%.o: kernel/%.s
-	$(AS) $(ASFLAGS) -g -o $@ $<
-
-
-$(LIB_DEBUG): $(patsubst %.o,bin/debug/lib/%.o,$(LIBOBJ))
+$(BINDIR)/lib.a: $(LIBOBJ)
+	$(ECHO) AR $(patsubst $(BINDIR)/%,%,$@)
 	$(AR) $(ARFLAGS) $@ $^
 
-bin/debug/lib/%.o: lib/%.c include/*.h
-	$(CC) $(CCFLAGS) -g -o $@ $<
+
+$(BINDIR)/%.s.o: %.s
+	$(ECHO) AS $(patsubst $(BINDIR)/%,%,$@)
+	$(AS) $(ASFLAGS) -o $@ $<
+
+$(BINDIR)/%.c.o: %.c
+	$(ECHO) CC $(patsubst $(BINDIR)/%,%,$@)
+	$(CC) $(CCFLAGS) -o $@ $<
+
+
+$(BINDIR)/%.d: %.c $(BINDIR)
+	$(CC) $(CCFLAGS) -M -o $@ $< -MT $(patsubst %.c,$(BINDIR)/%.o,$<)
+
+-include $(DEPFILES)

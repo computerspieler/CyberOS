@@ -5,11 +5,6 @@
 #include "kernel/multiboot.h"
 #include "kernel/serial.h"
 
-static IDT_Descriptor descriptor;
-static IDT_Entry entries[NB_IDT_ENTRIES];
-
-void interrupt_init();
-
 void main(Multiboot_Info* info, u32 magic)
 {
 	serial_init();
@@ -45,22 +40,5 @@ void main(Multiboot_Info* info, u32 magic)
 		serial_send_value(0, 16, entry->type);
 	}
 
-	asm("sti");
 	while(true);
-}
-
-void interrupt_init()
-{
-	extern u32* interrupt_table;
-	extern u32 interrupt_table_size;
-
-	int i;
-
-	for(i = 0; i < interrupt_table_size / sizeof(u32); i++)
-		entries[i] = IDT_create_entry(0x08, &interrupt_table[i], 0x8E);
-
-	descriptor.address = entries;
-	descriptor.size = NB_IDT_ENTRIES * sizeof(IDT_Entry);
-
-	asm volatile("lidt (%0)" : : "r" (&descriptor));
 }

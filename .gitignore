@@ -1,4 +1,3 @@
-bin/*
-toolchain/*
-gdb_commands
-!toolchain/build.sh
+binaries.*
+toolchain
+tmp

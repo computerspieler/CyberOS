@@ -11,3 +11,13 @@ u8 inb(u16 port)
 	asm volatile("in %1, %0" : "+r" (data) : "r" (port));
 	return data;
 }
+
+void enable_interrupt()
+{
+	asm("sti");
+}
+
+void disable_interrupt()
+{
+	asm("cli");
+}

@@ -6,6 +6,10 @@ export PREFIX=$PWD/toolchain
 export TARGET=i686-elf
 export PATH="$PREFIX/bin:$PATH"
 
+mkdir tmp
+mkdir toolchain
+cd tmp
+
 echo Download tarballs
 if [ ! -f binutils-$BINUTILS_VERSION.tar.gz ]; then
 	wget https://gcc.gnu.org/pub/binutils/releases/binutils-$BINUTILS_VERSION.tar.gz
@@ -44,4 +48,6 @@ make all-gcc
 make all-target-libgcc
 make install-gcc
 make install-target-libgcc
+cd ..
+
 cd ..
