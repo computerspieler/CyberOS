@@ -6,9 +6,12 @@ if [ $# != 2 ]; then
 	exit 1
 fi
 
+# Create the config file
 echo "
+set timeout=0
 menuentry \"CyberOS\" {
 	multiboot /kernel.elf
 }
 " > $1/boot/grub/grub.cfg
-grub-mkrescue -o $2 $1
+
+grub-mkrescue -o $2 $1 2> /dev/null

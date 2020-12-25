@@ -4,6 +4,14 @@ ifeq ($(TARGET_ARCHITECTURE),x86)
 	COMPILER_PREFIX=i686-elf
 endif
 
+ifneq ($(findstring debug,$(MAKECMDGOALS)),)
+	BUILD_TYPE=debug
+endif
+
+ifneq ($(findstring release,$(MAKECMDGOALS)),)
+	BUILD_TYPE=release
+endif
+
 ifeq ($(ENABLE_BUILD_NUMBER_SYSTEM),1)
 	BUILD_NUMBER=$(words $(wildcard binaries.$(TARGET_ARCHITECTURE).*) future_binary_folder)
 else
@@ -22,18 +30,22 @@ ASFLAGS=
 AR=@$(COMPILER_PREFIX)-ar
 ARFLAGS=rcs
 
+ifeq ($(BUILD_TYPE),debug)
+	CCFLAGS+=-g -ggdb -O0
+	ASFLAGS+=-g -ggdb
+	LDFLAGS+=-g
+endif
+
+ifeq ($(BUILD_TYPE),release)
+	CCFLAGS+=-O2
+endif
+
+
 MKDIR=@mkdir -p
 DEL=@rm -rf
 ECHO=@echo
 COPY=@cp
 
-ifneq ($(findstring debug,$(MAKECMDGOALS)),)
-	BUILD_TYPE=debug
-endif
-
-ifneq ($(findstring release,$(MAKECMDGOALS)),)
-	BUILD_TYPE=release
-endif
 
 BINDIR=build.$(TARGET_ARCHITECTURE).$(BUILD_TYPE).$(BUILD_NUMBER)
 ISODIR=$(BINDIR)/iso
@@ -55,25 +67,15 @@ else
 		$(patsubst %.o,$(BINDIR)/lib/%.d,$(LIBOBJ))
 endif
 
-ifeq ($(BUILD_TYPE),debug)
-	CCFLAGS+=-g -ggdb -O0
-	ASFLAGS+=-g -ggdb
-	LDFLAGS+=-g
-endif
-
-ifeq ($(BUILD_TYPE),release)
-	CCFLAGS+=-O2
-endif
-
-debug: build-img
+debug: build
 debug-run: debug run
 
-release: build-img
+release: build
 release-run: release run
 
 run: scripts/run-$(TARGET_ARCHITECTURE)-$(EMULATOR).sh
 	$(ECHO) RUN
-	@./scripts/run-$(TARGET_ARCHITECTURE)-$(EMULATOR).sh $(ISONAME) $(BUILD_TYPE)
+	@./scripts/run-$(TARGET_ARCHITECTURE)-$(EMULATOR).sh $(ISONAME) $(BUILD_TYPE) $(BINDIR)/logs $(BINDIR)
 
 clean:
 	$(ECHO) CLEAN binaries folders
@@ -84,7 +86,7 @@ mrproper:
 	$(ECHO) CLEAN binaries folders
 	$(DEL) build.*
 
-build-img: $(ISONAME)
+build: $(ISONAME)
 
 $(ISONAME): $(BINDIR) $(BINDIR)/lib.a $(BINDIR)/kernel.elf
 	$(ECHO) BUILD disk image
@@ -94,13 +96,14 @@ $(ISONAME): $(BINDIR) $(BINDIR)/lib.a $(BINDIR)/kernel.elf
 
 $(BINDIR):
 	$(ECHO) MKDIR build directories: $(BINDIR)
+	$(MKDIR) $(BINDIR)/logs
 	$(MKDIR) $(BINDIR)/kernel
 	$(MKDIR) $(BINDIR)/kernel/arch/$(TARGET_ARCHITECTURE)
 	$(MKDIR) $(BINDIR)/lib
 	$(MKDIR) $(ISODIR)
 	$(MKDIR) $(ISODIR)/boot/grub
 
-$(BINDIR)/kernel.elf: $(KERNELOBJ) $(BINDIR)/lib.a
+$(BINDIR)/kernel.elf: $(KERNELOBJ)
 	$(ECHO) LINK $(patsubst $(BINDIR)/%,%,$@)
 	$(LD) $(LDFLAGS) -T kernel/linker.ld $^ -o $@
 
