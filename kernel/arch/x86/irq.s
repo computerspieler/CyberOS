@@ -6,10 +6,10 @@
 	.global irq\id\()_handler_entry
 	irq\id\()_handler_entry:
 		pusha
-		movw \id, %ax
-		pushl %eax
+		mov $\id, %eax
+		push %eax
 		call general_interrupt_handler
-		popl %eax
+		pop %eax
 		popa
 		iret 
 .endm
@@ -37,3 +37,6 @@ interrupt_table:
 
 .global interrupt_table_size
 interrupt_table_size: .long . - interrupt_table
+
+.global interrupt_table_ptr
+interrupt_table_ptr: .long interrupt_table

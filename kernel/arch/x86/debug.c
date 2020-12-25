@@ -14,7 +14,7 @@ int debug_print_multiboot(Multiboot_Info* info)
 
 	serial_send_string("CyberOS build ");
 	serial_send_value(10, BUILD_NO);
-	serial_send_string("\n");
+	serial_send_char('\n');
 
 	serial_send_string("=== Multiboot info ===\n");
 	serial_send_string("Flags: ");
@@ -43,7 +43,7 @@ int debug_print_multiboot(Multiboot_Info* info)
 		serial_send_value(16, entry->type);
 	}
 
-	serial_send_string("\n");
+	serial_send_char('\n');
 
 	return 0;
 }
@@ -93,7 +93,7 @@ int debug_print_gdt(GDT_Descriptor* descriptor)
 		serial_send_string("; Address : ");
 		serial_send_value(16, (u32)(&descriptor->address[i]));
 
-		serial_send_string("\n");
+		serial_send_char('\n');
 	}
 
 	return 0;

@@ -1,3 +1,4 @@
+#include "kernel/asm.h"
 #include "kernel/idt.h"
 #include "kernel/interrupt.h"
 #include "kernel/pic.h"
@@ -8,16 +9,24 @@ static IDT_Entry entries[NB_IDT_ENTRIES];
 
 void interrupt_init()
 {
-	extern u32* interrupt_table;
+	extern u32* interrupt_table_ptr;
 	extern u32 interrupt_table_size;
 
 	int i;
 
-	for(i = 0; i < (int)(interrupt_table_size / sizeof(u32)); i++)
-		entries[i] = IDT_create_entry(0x08, (u32) &interrupt_table[i], 0x8E);
+	serial_send_string("=== Interrupts ===\n");
+
+	serial_send_string("Interrupt table: ");
+	serial_send_value(16, (u32) interrupt_table_ptr);
+	serial_send_char('\n');
+
+	for(i = 0; i < (int) interrupt_table_size; i++)
+		entries[i] = IDT_create_entry(0x10, (u32) interrupt_table_ptr[i], 0x8E);
 
 	descriptor.address = entries;
 	descriptor.size = NB_IDT_ENTRIES * sizeof(IDT_Entry);
+
+	PIC_init();
 
 	asm volatile("lidt (%0)" : : "r" (&descriptor));
 }
