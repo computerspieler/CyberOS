@@ -50,8 +50,10 @@ int debug_print_multiboot(Multiboot_Info* info)
 
 int debug_print_gdt(GDT_Descriptor* descriptor)
 {
-	GDT_Entry* entry;
-	u32 entry_address;
+	int i;
+
+	GDT_Entry entry;
+	u32 entry_base;
 	u32 entry_limit;
 	u8 entry_access;
 	u8 entry_flags;
@@ -62,17 +64,18 @@ int debug_print_gdt(GDT_Descriptor* descriptor)
 	serial_send_string("\nSize: ");
 	serial_send_value(16, descriptor->size);
 	serial_send_string("\nEntries: \n");
-	for(entry = (GDT_Entry*) descriptor->address;
-		entry < (GDT_Entry*)(descriptor->address + descriptor->size);
-		entry += sizeof(GDT_Entry))
-	{
-		entry_address = (*entry >> 56 & 0xFF << 24) + (*entry >> 16 & 0xFFFFFF);
-		entry_limit = (*entry >> 48 & 0xFF << 16) + (*entry & 0xFFFF);
-		entry_access = *entry >> 40 & 0xFF;
-		entry_flags	= *entry >> 52 & 0xF;
 
-		serial_send_string(" Address: ");
-		serial_send_value(16, entry_address);
+	for(i = 0; i < descriptor->size / sizeof(GDT_Entry); i++)
+	{
+		entry = descriptor->address[i];
+
+		entry_base = (entry >> 56 & 0xFF << 24) + (entry >> 16 & 0xFFFFFF);
+		entry_limit = (entry >> 48 & 0xFF << 16) + (entry & 0xFFFF);
+		entry_access = entry >> 40 & 0xFF;
+		entry_flags	= entry >> 52 & 0xF;
+
+		serial_send_string(" Base: ");
+		serial_send_value(16, entry_base);
 
 		serial_send_string("; Limit: ");
 		serial_send_value(16, entry_limit);
@@ -82,7 +85,14 @@ int debug_print_gdt(GDT_Descriptor* descriptor)
 
 		serial_send_string("; Flags: ");
 		serial_send_value(16, entry_flags);
-		
+
+		serial_send_string("; Full Entry: ");
+		serial_send_value(16, (u32)(entry >> 32));
+		serial_send_value(16, (u32)(entry));
+
+		serial_send_string("; Address : ");
+		serial_send_value(16, (u32)(&descriptor->address[i]));
+
 		serial_send_string("\n");
 	}
 
