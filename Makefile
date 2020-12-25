@@ -25,6 +25,7 @@ ARFLAGS=rcs
 MKDIR=@mkdir -p
 DEL=@rm -rf
 ECHO=@echo
+COPY=@cp
 
 ifneq ($(findstring debug,$(MAKECMDGOALS)),)
 	BUILD_TYPE=debug
@@ -34,7 +35,9 @@ ifneq ($(findstring release,$(MAKECMDGOALS)),)
 	BUILD_TYPE=release
 endif
 
-BINDIR=binaries.$(TARGET_ARCHITECTURE).$(BUILD_TYPE).$(BUILD_NUMBER)
+BINDIR=build.$(TARGET_ARCHITECTURE).$(BUILD_TYPE).$(BUILD_NUMBER)
+ISODIR=$(BINDIR)/iso
+ISONAME=$(BINDIR)/build.$(BUILD_NUMBER).$(BUILD_TYPE).iso
 
 KERNELOBJ=$(patsubst kernel/%,$(BINDIR)/kernel/%.o, \
 	$(wildcard kernel/*.c) $(wildcard kernel/*.s) \
@@ -62,28 +65,42 @@ ifeq ($(BUILD_TYPE),release)
 	CCFLAGS+=-O2
 endif
 
-debug-run: build-img
-	$(ECHO) RUN
-	@./scripts/run.sh $(BINDIR) $(EMULATOR) $(BUILD_TYPE) $(TARGET_ARCHITECTURE)
+debug: build-img
+debug-run: debug run
 
-release-run: build-img
+release: build-img
+release-run: release run
+
+run: scripts/run-$(TARGET_ARCHITECTURE)-$(EMULATOR).sh
 	$(ECHO) RUN
-	@./scripts/run.sh $(BINDIR) $(EMULATOR) $(BUILD_TYPE) $(TARGET_ARCHITECTURE)
+	@./scripts/run-$(TARGET_ARCHITECTURE)-$(EMULATOR).sh $(ISONAME) $(BUILD_TYPE)
 
 clean:
 	$(ECHO) CLEAN binaries folders
-	$(DEL) binaries.*
+	$(DEL) build.$(TARGET_ARCHITECTURE).debug.0
+	$(DEL) build.$(TARGET_ARCHITECTURE).release.0
 
-build-img: $(BINDIR) $(BINDIR)/lib.a $(BINDIR)/kernel.bin
+mrproper:
+	$(ECHO) CLEAN binaries folders
+	$(DEL) build.*
+
+build-img: $(ISONAME)
+
+$(ISONAME): $(BINDIR) $(BINDIR)/lib.a $(BINDIR)/kernel.elf
+	$(ECHO) BUILD disk image
+	$(COPY) $(BINDIR)/kernel.elf $(ISODIR)
+	$(COPY) $(BINDIR)/lib.a $(ISODIR)
+	@./scripts/create-grub-iso.sh $(ISODIR) $(ISONAME)
 
 $(BINDIR):
 	$(ECHO) MKDIR build directories: $(BINDIR)
-	$(MKDIR) $(BINDIR)/boot/grub
 	$(MKDIR) $(BINDIR)/kernel
 	$(MKDIR) $(BINDIR)/kernel/arch/$(TARGET_ARCHITECTURE)
 	$(MKDIR) $(BINDIR)/lib
+	$(MKDIR) $(ISODIR)
+	$(MKDIR) $(ISODIR)/boot/grub
 
-$(BINDIR)/kernel.bin: $(KERNELOBJ) $(BINDIR)/lib.a
+$(BINDIR)/kernel.elf: $(KERNELOBJ) $(BINDIR)/lib.a
 	$(ECHO) LINK $(patsubst $(BINDIR)/%,%,$@)
 	$(LD) $(LDFLAGS) -T kernel/linker.ld $^ -o $@
 
