@@ -24,9 +24,9 @@ void interrupt_init()
 
 void general_interrupt_handler(u32 irq_id)
 {
-	serial_send_string(0, "IRQ no ");
-	serial_send_value(0, 10, irq_id);
-	serial_send_char(0, '\n');
+	serial_send_string("IRQ no ");
+	serial_send_value(10, irq_id);
+	serial_send_char('\n');
 
 	if(irq_id >= 0x08 && irq_id <= 0x0F)
 		PIC_send_EOI(true, false);
