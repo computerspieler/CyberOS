@@ -13,8 +13,8 @@ void interrupt_init()
 
 	int i;
 
-	for(i = 0; i < interrupt_table_size / sizeof(u32); i++)
-		entries[i] = IDT_create_entry(0x08, &interrupt_table[i], 0x8E);
+	for(i = 0; i < (int)(interrupt_table_size / sizeof(u32)); i++)
+		entries[i] = IDT_create_entry(0x08, (u32) &interrupt_table[i], 0x8E);
 
 	descriptor.address = entries;
 	descriptor.size = NB_IDT_ENTRIES * sizeof(IDT_Entry);

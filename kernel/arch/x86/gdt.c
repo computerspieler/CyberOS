@@ -8,12 +8,16 @@ GDT_Entry GDT_create_entry(u32 base_address, u32 limit, u8 flags, u8 access)
 	entry |= (access & 0xF) << 20;
 	entry |= limit & 0xF0000;
 	entry |= flags << 8;
-	entry |= base_address >> 16 & 0xFF;
 
 	entry <<= 32;
 
-	entry |= base_address & 0xFFFF << 16;
+	entry |= (base_address & 0xFFFFFF) << 16;
 	entry |= limit & 0xFFFF;
 
 	return entry; 
+}
+
+void extract_actual_gdt(GDT_Descriptor* ptr)
+{
+	asm volatile("sgdt (%0)" : : "r" (ptr));
 }

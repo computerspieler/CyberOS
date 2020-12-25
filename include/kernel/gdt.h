@@ -14,4 +14,6 @@ struct GDT_Descriptor
 
 GDT_Entry GDT_create_entry(u32 base_address, u32 limit, u8 flags, u8 access);
 
+void extract_actual_gdt(GDT_Descriptor* ptr);
+
 #endif
