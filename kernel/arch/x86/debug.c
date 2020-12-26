@@ -51,12 +51,9 @@ int debug_print_multiboot(Multiboot_Info* info)
 int debug_print_gdt(GDT_Descriptor* descriptor)
 {
 	int i;
+	int j;
 
 	GDT_Entry entry;
-	u32 entry_base;
-	u32 entry_limit;
-	u8 entry_access;
-	u8 entry_flags;
 
 	serial_send_string("=== GDT Descriptor ===\n");
 	serial_send_string("Address: ");
@@ -69,26 +66,17 @@ int debug_print_gdt(GDT_Descriptor* descriptor)
 	{
 		entry = descriptor->address[i];
 
-		entry_base = (entry >> 56 & 0xFF << 24) + (entry >> 16 & 0xFFFFFF);
-		entry_limit = (entry >> 48 & 0xFF << 16) + (entry & 0xFFFF);
-		entry_access = entry >> 40 & 0xFF;
-		entry_flags	= entry >> 52 & 0xF;
-
 		serial_send_string(" Base: ");
-		serial_send_value(16, entry_base);
+		serial_send_value(16, (entry.base_high << 24) + entry.base_low);
 
 		serial_send_string("; Limit: ");
-		serial_send_value(16, entry_limit);
+		serial_send_value(16, (entry.limit_high << 16) + entry.limit_low);
 
 		serial_send_string("; Access: ");
-		serial_send_value(16, entry_access);
+		serial_send_value(16, entry.access);
 
 		serial_send_string("; Flags: ");
-		serial_send_value(16, entry_flags);
-
-		serial_send_string("; Full Entry: ");
-		serial_send_value(16, (u32)(entry >> 32));
-		serial_send_value(16, (u32)(entry));
+		serial_send_value(16, entry.flags);
 
 		serial_send_string("; Address : ");
 		serial_send_value(16, (u32)(&descriptor->address[i]));

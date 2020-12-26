@@ -14,6 +14,9 @@ struct IDT_Descriptor
 	IDT_Entry* address;
 } __attribute__ ((packed));
 
+#define IDT_PUSH_DESCRIPTOR(descriptor) \
+	asm volatile("lidt (%0)" : : "r" (descriptor))
+
 IDT_Entry IDT_create_entry(u16 selector, u32 offset, u8 flags);
 
 #endif

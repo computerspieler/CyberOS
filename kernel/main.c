@@ -7,19 +7,18 @@
 
 void main(Multiboot_Info* info, u32 magic)
 {
-	GDT_Descriptor* actual_gdt;
-
 	serial_init();
 	debug_init();
+/*
+	For some reasons, interrupts needs to be initialized before memory,
+	since the IDT overwrite the GDT, weird right ?
+*/
 	interrupt_init();
+	memory_init(info);
 
 	serial_send_string("Magic number: ");
 	serial_send_value(16, magic);
 	serial_send_char('\n');
-
-	debug_print_multiboot(info);
-	extract_actual_gdt(actual_gdt);
-	debug_print_gdt(actual_gdt);
 
 	enable_interrupt();
 	while(true);
