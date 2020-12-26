@@ -13,7 +13,7 @@ else
 endif
 
 ifeq ($(ENABLE_BUILD_NUMBER_SYSTEM),1)
-	BUILD_NUMBER=$(words $(wildcard binaries.$(TARGET_ARCHITECTURE).*) future_binary_folder)
+	BUILD_NUMBER=$(words $(wildcard build.$(TARGET_ARCHITECTURE).*) future_binary_folder)
 else
 	BUILD_NUMBER=0
 endif
