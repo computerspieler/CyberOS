@@ -6,10 +6,10 @@ endif
 
 ifneq ($(findstring debug,$(MAKECMDGOALS)),)
 	BUILD_TYPE=debug
-endif
-
-ifneq ($(findstring release,$(MAKECMDGOALS)),)
+else ifneq ($(findstring release,$(MAKECMDGOALS)),)
 	BUILD_TYPE=release
+else
+	BUILD_TYPE=none
 endif
 
 ifeq ($(ENABLE_BUILD_NUMBER_SYSTEM),1)
@@ -19,7 +19,8 @@ else
 endif
 
 CC=@$(COMPILER_PREFIX)-gcc
-CCFLAGS=-Wall -Wextra -ffreestanding -fno-exceptions -mgeneral-regs-only -c -Iinclude/ -D BUILD_NO=$(BUILD_NUMBER)
+CCFLAGS=-Wall -Wextra -ffreestanding -fno-exceptions -mgeneral-regs-only -c -Iinclude/ -D BUILD_NO=$(BUILD_NUMBER) \
+	-finline-functions
 
 LD=@$(COMPILER_PREFIX)-gcc
 LDFLAGS=-ffreestanding -nostdlib -lgcc
@@ -46,26 +47,28 @@ DEL=@rm -rf
 ECHO=@echo
 COPY=@cp
 
+ifneq ($(BUILD_TYPE),none)
+	BINDIR=build.$(TARGET_ARCHITECTURE).$(BUILD_TYPE).$(BUILD_NUMBER)
+	ISODIR=$(BINDIR)/iso
+	ISONAME=$(BINDIR)/build.$(BUILD_NUMBER).$(BUILD_TYPE).iso
 
-BINDIR=build.$(TARGET_ARCHITECTURE).$(BUILD_TYPE).$(BUILD_NUMBER)
-ISODIR=$(BINDIR)/iso
-ISONAME=$(BINDIR)/build.$(BUILD_NUMBER).$(BUILD_TYPE).iso
+	KERNELOBJ=$(patsubst kernel/%,$(BINDIR)/kernel/%.o, \
+		$(wildcard kernel/*.c) $(wildcard kernel/*.s) \
+		$(wildcard kernel/arch/$(TARGET_ARCHITECTURE)/*.c) \
+		$(wildcard kernel/arch/$(TARGET_ARCHITECTURE)/*.s) \
+	)
+	LIBOBJ=$(patsubst lib/%,$(BINDIR)/lib/%.o, \
+		$(wildcard lib/*.c) \
+	)
 
-KERNELOBJ=$(patsubst kernel/%,$(BINDIR)/kernel/%.o, \
-	$(wildcard kernel/*.c) $(wildcard kernel/*.s) \
-	$(wildcard kernel/arch/$(TARGET_ARCHITECTURE)/*.c) \
-	$(wildcard kernel/arch/$(TARGET_ARCHITECTURE)/*.s) \
-)
-LIBOBJ=$(patsubst lib/%,$(BINDIR)/lib/%.o, \
-	$(wildcard lib/*.c) \
-)
-
-ifeq ($(ENABLE_BUILD_NUMBER_SYSTEM),1)
-	DEPFILES=
-else
-	DEPFILES=$(patsubst %.o,$(BINDIR)/kernel/%.d,$(KERNELOBJ)) \
-		$(patsubst %.o,$(BINDIR)/lib/%.d,$(LIBOBJ))
+	ifeq ($(ENABLE_BUILD_NUMBER_SYSTEM),1)
+		DEPFILES=
+	else
+		DEPFILES=$(patsubst %.o,%.d,$(LIBOBJ) $(KERNELOBJ))
+	endif
 endif
+
+.PHONY: clean
 
 debug: build
 debug-run: debug run
@@ -82,8 +85,8 @@ clean:
 	$(DEL) build.$(TARGET_ARCHITECTURE).debug.0
 	$(DEL) build.$(TARGET_ARCHITECTURE).release.0
 
-mrproper:
-	$(ECHO) CLEAN binaries folders
+mrproper: clean
+	$(ECHO) CLEAN all binaries folders
 	$(DEL) build.*
 
 build: $(ISONAME)
@@ -121,7 +124,7 @@ $(BINDIR)/%.c.o: %.c
 	$(CC) $(CCFLAGS) -o $@ $<
 
 
-$(BINDIR)/%.d: %.c $(BINDIR)
-	$(CC) $(CCFLAGS) -M -o $@ $< -MT $(patsubst %.c,$(BINDIR)/%.o,$<)
+$(BINDIR)/%.c.d: %.c $(BINDIR)
+	$(CC) $(CCFLAGS) -M -o $@ $< -MT $(patsubst %.c,$(BINDIR)/%.c.o,$<)
 
 -include $(DEPFILES)

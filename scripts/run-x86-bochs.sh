@@ -16,5 +16,6 @@ if [[ ! -f $CONFIG_FILE ]]; then
 	sed "s@<LOGDIR>@$3@g; s@<ISO>@$1@g; s@<DEBUG_MODE>@$DEBUG_MODE@g; s@<GUI_DEBUGGER>@$GUI_DEBUGGER@g" bochsrc.template > $CONFIG_FILE
 fi
 
+rm -rf $3/serial.txt
 bochs -f $CONFIG_FILE -q
 rm -f bx_enh_dbg.ini
