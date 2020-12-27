@@ -5,8 +5,17 @@
 
 #define NB_IDT_ENTRIES 256
 
-typedef u64 IDT_Entry;
+typedef struct IDT_Entry IDT_Entry;
 typedef struct IDT_Descriptor IDT_Descriptor;
+
+struct IDT_Entry
+{
+	u16 offset_low;
+	u16 selector;
+	u8 empty;
+	u8 flags;
+	u16 offset_high;
+} __attribute__ ((packed));
 
 struct IDT_Descriptor
 {

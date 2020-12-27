@@ -35,8 +35,8 @@ int debug_print_multiboot(Multiboot_Info* info)
 		entry = (Multiboot_Memory_Map_Entry*) ((u32)entry + entry->size + sizeof(entry->size)))
 	{
 		serial_send_string("\n Memory entry: Address: ");
-		serial_send_value(16, entry->address_high);
-		serial_send_value(16, entry->address_low);
+		serial_send_value(16, entry->address >> 32);
+		serial_send_value(16, (u32) entry->address);
 		serial_send_string("; Length: ");
 		serial_send_value(10, entry->length);
 		serial_send_string("; Type: ");

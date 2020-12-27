@@ -34,7 +34,6 @@ void interrupt_init()
 
 void general_interrupt_handler(u32 irq_id)
 {
-
 	serial_send_string("IRQ no ");
 	serial_send_value(10, irq_id);
 	serial_send_char('\n');

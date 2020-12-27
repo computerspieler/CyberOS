@@ -3,12 +3,15 @@ ENTRY(start)
 SECTIONS
 {
 	. = 1M;
+	KERNEL_CODE_START = .;
 	.text BLOCK(4K) : ALIGN(4K)
 	{
 		*(.Multiboot_Header)
 		*(.text)
 	}
+	KERNEL_CODE_END = .;
 
+	KERNEL_DATA_START = .;
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
 		*(.rodata)
@@ -24,4 +27,5 @@ SECTIONS
 		*(COMMON)
 		*(.bss)
 	}
+	KERNEL_DATA_END = .;
 }

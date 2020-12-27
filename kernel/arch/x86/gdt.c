@@ -15,3 +15,22 @@ GDT_Entry GDT_create_entry(u32 base_address, u32 limit, u8 flags, u8 access)
 
 	return entry; 
 }
+
+GDT_Entry GDT_create_code_selector(u32 base_address, u32 limit, u8 flags, u8 privilege)
+{
+	return GDT_create_entry(0, 0xFFFFF, flags,
+		GDT_ACCESS_PRESENT |
+		GDT_ACCESS_PRIVILEGE(privilege) |
+		GDT_ACCESS_DESCRIPTOR |
+		GDT_ACCESS_CODE_SELECTOR |
+		GDT_ACCESS_READ_WRITE);
+}
+
+GDT_Entry GDT_create_data_selector(u32 base_address, u32 limit, u8 flags, u8 privilege)
+{
+	return GDT_create_entry(0, 0xFFFFF, flags,
+		GDT_ACCESS_PRESENT |
+		GDT_ACCESS_PRIVILEGE(privilege) |
+		GDT_ACCESS_DESCRIPTOR |
+		GDT_ACCESS_READ_WRITE);
+}

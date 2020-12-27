@@ -13,6 +13,7 @@ typedef struct Multiboot_A_Out_Symbol_Table Multiboot_A_Out_Symbol_Table;
 enum Multiboot_Memory_Map_Entry_Type
 {
 	Available_Memory		 = 1,
+	Reserved_Memory			 = 2,
 	Memory_Holding_ACPI_Data = 3,
 	Memory_To_Preserve		 = 4,
 	Defective_Memory		 = 5,
@@ -37,10 +38,9 @@ struct Multiboot_ELF_Header_Table
 struct Multiboot_Memory_Map_Entry
 {
 	u32 size;
-	u32 address_high;
-	u32 address_low;
+	u64 address;
 	u64 length;
-	u32 type;
+	Multiboot_Memory_Map_Entry_Type type: 32;
 } __attribute__((packed));
 
 struct Multiboot_Info

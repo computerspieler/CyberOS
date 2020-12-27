@@ -4,13 +4,11 @@ IDT_Entry IDT_create_entry(u16 selector, u32 offset, u8 flags)
 {
 	IDT_Entry entry;
 
-	entry  = offset & 0xFFFF0000;
-	entry |= flags << 8;
+	entry.offset_low = offset & 0xFFFF;
+	entry.offset_high = offset >> 16;
 
-	entry <<= 32;
-
-	entry |= selector << 16;
-	entry |= offset   & 0xFFFF;
+	entry.flags = flags;
+	entry.selector = selector;
 
 	return entry; 
 }

@@ -23,8 +23,10 @@ void memory_init(Multiboot_Info* info)
 	gdt_descriptor.size = 3 * sizeof(GDT_Entry);
 
 	gdt_entries[0] = GDT_create_entry(0, 0, 0, 0);
-	gdt_entries[1] = GDT_create_entry(0, 0xFFFFFFFF, 0x0C, 0x9B);
-	gdt_entries[2] = GDT_create_entry(0, 0xFFFFFFFF, 0x0C, 0x93);
+	/* Kernel Code Entry */
+	gdt_entries[1] = GDT_create_code_selector(0, 0xFFFFF, GDT_FLAGS_PAGE_BLOCK | GDT_FLAGS_32_BITS_SELECTOR, 0);
+	/* Kernel Data Entry */
+	gdt_entries[2] = GDT_create_data_selector(0, 0xFFFFF, GDT_FLAGS_PAGE_BLOCK | GDT_FLAGS_32_BITS_SELECTOR, 0);
 	
 	serial_send_string("[INFO] Push a new GDT\n");
 	debug_print_gdt(&gdt_descriptor);
