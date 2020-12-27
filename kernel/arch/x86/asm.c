@@ -1,13 +1,13 @@
 #include "kernel/asm.h"
 
-void outb(u16 port, u8 data)
+void outb(uint16_t port, uint8_t data)
 {
 	asm volatile("out %0, %1" : : "r" (data), "r" (port));
 }
 
-u8 inb(u16 port)
+uint8_t inb(uint16_t port)
 {
-	u8 data = 0;
+	uint8_t data = 0;
 	asm volatile("in %1, %0" : "+r" (data) : "r" (port));
 	return data;
 }

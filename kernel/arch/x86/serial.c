@@ -1,4 +1,4 @@
-#include "typedef.h"
+#include <stddef.h>
 
 #include "kernel/asm.h"
 #include "kernel/serial.h"
@@ -7,7 +7,7 @@
 
 void serial_init()
 {
-	u16 divisor = 3;
+	uint16_t divisor = 3;
 
 	outb(SERIAL_PORT + 1, 0x00);
 	outb(SERIAL_PORT + 3, 0x80);
@@ -20,7 +20,7 @@ void serial_init()
 	outb(SERIAL_PORT + 4, 0x0B);
 }
 
-void serial_send_value(u8 base, u32 value)
+void serial_send_value(uint8_t base, uint32_t value)
 {
 	int nb_characters = 0;
 	char number_to_print;

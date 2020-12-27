@@ -1,11 +1,11 @@
-#include "typedef.h"
+#include <stddef.h>
 
 #include "kernel/debug.h"
 #include "kernel/interrupt.h"
 #include "kernel/multiboot.h"
 #include "kernel/serial.h"
 
-void main(Multiboot_Info* info, u32 magic)
+void main(Multiboot_Info* info, uint32_t magic)
 {
 	serial_init();
 	debug_init();

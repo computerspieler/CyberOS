@@ -1,6 +1,6 @@
 #include "kernel/idt.h"
 
-IDT_Entry IDT_create_entry(u16 selector, u32 offset, u8 flags)
+IDT_Entry IDT_create_entry(uint16_t selector, uint32_t offset, uint8_t flags)
 {
 	IDT_Entry entry;
 

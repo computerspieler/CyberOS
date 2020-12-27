@@ -1,7 +1,7 @@
 #ifndef _MULTIBOOT_H_
 #define _MULTIBOOT_H_
 
-#include "typedef.h"
+#include <stddef.h>
 
 typedef enum Multiboot_Memory_Map_Entry_Type Multiboot_Memory_Map_Entry_Type;
 
@@ -21,41 +21,41 @@ enum Multiboot_Memory_Map_Entry_Type
 
 struct Multiboot_A_Out_Symbol_Table
 {
-	u32 tab_size;
-	u32 string_size;
-	u32 address;
-	u32 reserved;
+	uint32_t tab_size;
+	uint32_t string_size;
+	uint32_t address;
+	uint32_t reserved;
 };
 
 struct Multiboot_ELF_Header_Table
 {
-	u32 num;
-	u32 size;
-	u32 address;
-	u32 shndx;
+	uint32_t num;
+	uint32_t size;
+	uint32_t address;
+	uint32_t shndx;
 };
 
 struct Multiboot_Memory_Map_Entry
 {
-	u32 size;
-	u64 address;
-	u64 length;
+	uint32_t size;
+	uint64_t address;
+	uint64_t length;
 	Multiboot_Memory_Map_Entry_Type type: 32;
 } __attribute__((packed));
 
 struct Multiboot_Info
 {
-	u32 flags;
+	uint32_t flags;
 
-	u32 mem_lower;
-	u32 mem_upper;
+	uint32_t mem_lower;
+	uint32_t mem_upper;
 
-	u32 boot_device;
+	uint32_t boot_device;
 
-	u32 cmdline;
+	uint32_t cmdline;
 
-	u32 mods_count;
-	u32 mods_address;
+	uint32_t mods_count;
+	uint32_t mods_address;
 
 	union
 	{
@@ -63,47 +63,47 @@ struct Multiboot_Info
 		Multiboot_ELF_Header_Table elf_header;
 	} table;
 
-	u32 mmap_length;
-	u32 mmap_address;
+	uint32_t mmap_length;
+	uint32_t mmap_address;
 	
-	u32 drives_length;
-	u32 drives_address;
+	uint32_t drives_length;
+	uint32_t drives_address;
 
-	u32 config_table;
+	uint32_t config_table;
 
-	u32 boot_loader_name;
+	uint32_t boot_loader_name;
 
-	u32 apm_table;
+	uint32_t apm_table;
 	
-	u32 vbe_control_info;
-	u32 vbe_mode_info;
-	u16 vbe_mode;
-	u16 vbe_interface_seg;
-	u16 vbe_interface_off;
-	u16 vbe_interface_length;
+	uint32_t vbe_control_info;
+	uint32_t vbe_mode_info;
+	uint16_t vbe_mode;
+	uint16_t vbe_interface_seg;
+	uint16_t vbe_interface_off;
+	uint16_t vbe_interface_length;
 
-	u64 video_address;
-	u32 video_pitch;
-	u32 video_width;
-	u32 video_height;
-	u8 video_bpp;
-	u8 video_type;
+	uint64_t video_address;
+	uint32_t video_pitch;
+	uint32_t video_width;
+	uint32_t video_height;
+	uint8_t video_bpp;
+	uint8_t video_type;
 	union
 	{
 		struct
 		{
-			u32 framebuffer_palete_address;
-			u32 framebuffer_palete_nb_colors;
+			uint32_t framebuffer_palete_address;
+			uint32_t framebuffer_palete_nb_colors;
 		};
 
 		struct
 		{
-			u8 framebuffer_red_field_position;
-			u8 framebuffer_red_mask_size;
-			u8 framebuffer_green_field_position;
-			u8 framebuffer_green_mask_size;
-			u8 framebuffer_blue_field_position;
-			u8 framebuffer_blue_mask_size;
+			uint8_t framebuffer_red_field_position;
+			uint8_t framebuffer_red_mask_size;
+			uint8_t framebuffer_green_field_position;
+			uint8_t framebuffer_green_mask_size;
+			uint8_t framebuffer_blue_field_position;
+			uint8_t framebuffer_blue_mask_size;
 		};
 	} video_color_info;
 };

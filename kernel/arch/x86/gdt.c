@@ -1,6 +1,6 @@
 #include "kernel/gdt.h"
 
-GDT_Entry GDT_create_entry(u32 base_address, u32 limit, u8 flags, u8 access)
+GDT_Entry GDT_create_entry(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t access)
 {
 	GDT_Entry entry;
 
@@ -16,7 +16,7 @@ GDT_Entry GDT_create_entry(u32 base_address, u32 limit, u8 flags, u8 access)
 	return entry; 
 }
 
-GDT_Entry GDT_create_code_selector(u32 base_address, u32 limit, u8 flags, u8 privilege)
+GDT_Entry GDT_create_code_selector(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t privilege)
 {
 	return GDT_create_entry(0, 0xFFFFF, flags,
 		GDT_ACCESS_PRESENT |
@@ -26,7 +26,7 @@ GDT_Entry GDT_create_code_selector(u32 base_address, u32 limit, u8 flags, u8 pri
 		GDT_ACCESS_READ_WRITE);
 }
 
-GDT_Entry GDT_create_data_selector(u32 base_address, u32 limit, u8 flags, u8 privilege)
+GDT_Entry GDT_create_data_selector(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t privilege)
 {
 	return GDT_create_entry(0, 0xFFFFF, flags,
 		GDT_ACCESS_PRESENT |

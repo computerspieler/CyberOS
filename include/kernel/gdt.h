@@ -1,24 +1,24 @@
 #ifndef _GDT_H_
 #define _GDT_H_
 
-#include "typedef.h"
+#include <stddef.h>
 
 typedef struct GDT_Entry GDT_Entry;
 typedef struct GDT_Descriptor GDT_Descriptor;
 
 struct GDT_Entry 
 {
-	u16 limit_low;
-	u32 base_low: 24;
-	u8 access;
-	u8 limit_high : 4;
-	u8 flags : 4;
-	u8 base_high;
+	uint16_t limit_low;
+	uint32_t base_low: 24;
+	uint8_t access;
+	uint8_t limit_high : 4;
+	uint8_t flags : 4;
+	uint8_t base_high;
 } __attribute__ ((packed));
 
 struct GDT_Descriptor
 {
-	u16 size;
+	uint16_t size;
 	GDT_Entry* address;
 } __attribute__ ((packed));
 
@@ -40,8 +40,8 @@ struct GDT_Descriptor
 #define GDT_PUSH_DESCRIPTOR(descriptor) \
 	asm volatile("lgdt (%0)" : : "r" (descriptor))
 
-GDT_Entry GDT_create_entry(u32 base_address, u32 limit, u8 flags, u8 access);
-GDT_Entry GDT_create_code_selector(u32 base_address, u32 limit, u8 flags, u8 privilege);
-GDT_Entry GDT_create_data_selector(u32 base_address, u32 limit, u8 flags, u8 privilege);
+GDT_Entry GDT_create_entry(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t access);
+GDT_Entry GDT_create_code_selector(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t privilege);
+GDT_Entry GDT_create_data_selector(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t privilege);
 
 #endif

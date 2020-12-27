@@ -1,4 +1,4 @@
-#include "typedef.h"
+#include <stddef.h>
 
 #include "kernel/debug.h"
 #include "kernel/serial.h"
@@ -32,11 +32,11 @@ int debug_print_multiboot(Multiboot_Info* info)
 
 	for(entry = (Multiboot_Memory_Map_Entry*) info->mmap_address;
 		entry < (Multiboot_Memory_Map_Entry*)(info->mmap_address + info->mmap_length);
-		entry = (Multiboot_Memory_Map_Entry*) ((u32)entry + entry->size + sizeof(entry->size)))
+		entry = (Multiboot_Memory_Map_Entry*) ((uint32_t)entry + entry->size + sizeof(entry->size)))
 	{
 		serial_send_string("\n Memory entry: Address: ");
 		serial_send_value(16, entry->address >> 32);
-		serial_send_value(16, (u32) entry->address);
+		serial_send_value(16, (uint32_t) entry->address);
 		serial_send_string("; Length: ");
 		serial_send_value(10, entry->length);
 		serial_send_string("; Type: ");
@@ -79,7 +79,7 @@ int debug_print_gdt(GDT_Descriptor* descriptor)
 		serial_send_value(16, entry.flags);
 
 		serial_send_string("; Address : ");
-		serial_send_value(16, (u32)(&descriptor->address[i]));
+		serial_send_value(16, (uint32_t)(&descriptor->address[i]));
 
 		serial_send_char('\n');
 	}

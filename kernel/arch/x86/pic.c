@@ -3,8 +3,8 @@
 
 void PIC_init()
 {
-	u8 mask_master = inb(MASTER_PIC_DATA);
-	u8 mask_slave  = inb(SLAVE_PIC_DATA);
+	uint8_t mask_master = inb(MASTER_PIC_DATA);
+	uint8_t mask_slave  = inb(SLAVE_PIC_DATA);
 
 	outb(MASTER_PIC_DATA, ICW1_INIT | ICW1_ICW4);
 	outb(SLAVE_PIC_DATA,  ICW1_INIT | ICW1_ICW4);
