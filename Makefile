@@ -110,6 +110,7 @@ $(BINDIR)/kernel.elf: $(KERNELOBJ)
 	$(ECHO) LINK $(patsubst $(BINDIR)/%,%,$@)
 	$(LD) $(LDFLAGS) -T kernel/linker.ld $^ -o $@
 
+$(BINDIR)/lib.a: CCFLAGS+=-DCOMPILE_LIBC
 $(BINDIR)/lib.a: $(LIBOBJ)
 	$(ECHO) AR $(patsubst $(BINDIR)/%,%,$@)
 	$(AR) $(ARFLAGS) $@ $^
