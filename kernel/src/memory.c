@@ -1,8 +1,8 @@
-#include "kernel/asm.h"
-#include "kernel/gdt.h"
-#include "kernel/memory.h"
-#include "kernel/multiboot.h"
-#include "kernel/serial.h"
+#include "asm.h"
+#include "gdt.h"
+#include "memory.h"
+#include "multiboot.h"
+#include "serial.h"
 
 #define XSTR(x) STR(x)
 #define STR(x) #x

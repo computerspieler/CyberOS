@@ -1,9 +1,9 @@
-#include <stddef.h>
+#include "typedef.h"
 
-#include "kernel/debug.h"
-#include "kernel/interrupt.h"
-#include "kernel/multiboot.h"
-#include "kernel/serial.h"
+#include "debug.h"
+#include "interrupt.h"
+#include "multiboot.h"
+#include "serial.h"
 
 void main(Multiboot_Info* info, uint32_t magic)
 {

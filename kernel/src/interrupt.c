@@ -1,9 +1,9 @@
-#include "kernel/asm.h"
-#include "kernel/idt.h"
-#include "kernel/interrupt.h"
-#include "kernel/memory.h"
-#include "kernel/pic.h"
-#include "kernel/serial.h"
+#include "asm.h"
+#include "idt.h"
+#include "interrupt.h"
+#include "memory.h"
+#include "pic.h"
+#include "serial.h"
 
 static IDT_Descriptor idt_descriptor;
 static IDT_Entry idt_entries[NB_IDT_ENTRIES];

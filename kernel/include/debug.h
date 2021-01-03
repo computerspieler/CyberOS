@@ -1,8 +1,8 @@
 #ifndef __DEBUG_H__
 #define __DEBUG_H__
 
-#include "kernel/gdt.h"
-#include "kernel/multiboot.h"
+#include "gdt.h"
+#include "multiboot.h"
 
 int debug_init();
 int debug_print_multiboot(Multiboot_Info* info);

@@ -2,7 +2,7 @@
 
 if [ $# != 4 ]; then
 	echo "ERROR: Not the right amount or arguments"
-	echo "./scripts/run-x86-bochs.sh <ISO> <BUILD TYPE> <LOG FOLDER> <BINARY FOLDER>"
+	echo "./scripts/run-x86-bochs.sh <ISO> <BUILD TYPE> <LOG OUTPUT> <BINARY FOLDER>"
 fi
 
 CONFIG_FILE="$4/bochsrc"
@@ -13,9 +13,9 @@ DEBUG_MODE=0
 # GUI_DEBUGGER=", options=\"gui_debug\""
 
 if [[ ! -f $CONFIG_FILE ]]; then
-	sed "s@<LOGDIR>@$3@g; s@<ISO>@$1@g; s@<DEBUG_MODE>@$DEBUG_MODE@g; s@<GUI_DEBUGGER>@$GUI_DEBUGGER@g" bochsrc.template > $CONFIG_FILE
+	sed "s@<LOGOUT>@$3@g; s@<ISO>@$1@g; s@<DEBUG_MODE>@$DEBUG_MODE@g; s@<GUI_DEBUGGER>@$GUI_DEBUGGER@g" bochsrc.template > $CONFIG_FILE
 fi
 
-rm -rf $3/serial.txt
+rm -rf $3
 bochs -f $CONFIG_FILE -q
 rm -f bx_enh_dbg.ini

@@ -1,7 +1,7 @@
 #ifndef _GDT_H_
 #define _GDT_H_
 
-#include <stddef.h>
+#include "typedef.h"
 
 typedef struct GDT_Entry GDT_Entry;
 typedef struct GDT_Descriptor GDT_Descriptor;

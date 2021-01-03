@@ -1,7 +1,7 @@
-#include <stddef.h>
+#include "typedef.h"
 
-#include "kernel/debug.h"
-#include "kernel/serial.h"
+#include "debug.h"
+#include "serial.h"
 
 int debug_init()
 {

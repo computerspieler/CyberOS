@@ -1,5 +1,5 @@
-#include "kernel/asm.h"
-#include "kernel/pic.h"
+#include "asm.h"
+#include "pic.h"
 
 void PIC_init()
 {

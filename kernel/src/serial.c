@@ -1,7 +1,7 @@
-#include <stddef.h>
+#include "typedef.h"
 
-#include "kernel/asm.h"
-#include "kernel/serial.h"
+#include "asm.h"
+#include "serial.h"
 
 #define SERIAL_PORT 0x3F8
 

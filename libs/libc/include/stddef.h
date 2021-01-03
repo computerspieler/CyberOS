@@ -1,11 +1,9 @@
 #ifndef _STDDEF_H_
 #define _STDDEF_H_
 
+#include "stdint.h"
+
 typedef enum bool bool;
-typedef unsigned char  		uint8_t;
-typedef unsigned short 		uint16_t;
-typedef unsigned int   		uint32_t;
-typedef unsigned long long	uint64_t;
 
 typedef int ptrdiff_t;
 typedef uint32_t size_t;

@@ -1,7 +1,7 @@
 #ifndef _IDT_H_
 #define _IDT_H_
 
-#include <stddef.h>
+#include "typedef.h"
 
 #define NB_IDT_ENTRIES 256
 

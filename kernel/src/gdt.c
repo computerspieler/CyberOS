@@ -1,4 +1,4 @@
-#include "kernel/gdt.h"
+#include "gdt.h"
 
 GDT_Entry GDT_create_entry(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t access)
 {
