@@ -38,9 +38,9 @@ void general_interrupt_handler(uint32_t irq_id)
 	serial_send_value(10, irq_id);
 	serial_send_char('\n');
 
-	if(irq_id >= 0x08 && irq_id <= 0x0F)
+	if(irq_id >= MASTER_PIC_OFFSET && irq_id <= MASTER_PIC_OFFSET + 7)
 		PIC_send_EOI(true, false);
 
-	if(irq_id >= 0x70 && irq_id <= 0x77)
+	if(irq_id >= SLAVE_PIC_OFFSET && irq_id <= SLAVE_PIC_OFFSET + 7)
 		PIC_send_EOI(true, true);
 }

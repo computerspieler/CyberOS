@@ -14,7 +14,7 @@ objs/%.c.o: src/%.c
 
 deps/%.c.d: src/%.c
 	$(MKDIR) deps
-	$(CC) $(CCFLAGS) -M -o $@ $< -MT $(patsubst %.c,objs/%.c.o,$<)
+	$(CC) $(CCFLAGS) -M -o $@ $< -MT $(patsubst src/%.c,objs/%.c.o,$<)
 
 -include $(DEPS)
 
