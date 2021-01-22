@@ -2,6 +2,7 @@
 #define _GDT_H_
 
 #include "typedef.h"
+#include "tss.h"
 
 typedef struct GDT_Entry GDT_Entry;
 typedef struct GDT_Descriptor GDT_Descriptor;
@@ -43,5 +44,6 @@ struct GDT_Descriptor
 GDT_Entry GDT_create_entry(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t access);
 GDT_Entry GDT_create_code_selector(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t privilege);
 GDT_Entry GDT_create_data_selector(uint32_t base_address, uint32_t limit, uint8_t flags, uint8_t privilege);
+GDT_Entry GDT_create_task_segment_selector(Task_State_Structure* tss, uint8_t privilege);
 
 #endif
