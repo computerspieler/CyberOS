@@ -1,7 +1,7 @@
 #ifndef __TSS_H__
 #define __TSS_H__
 
-#include "typedef.h"
+#include <stddef.h>
 
 typedef struct Task_State_Structure Task_State_Structure;
 

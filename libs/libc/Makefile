@@ -4,5 +4,4 @@ OBJS=$(patsubst src/%,objs/%.o,$(SRCS))
 
 build: $(OUTDIR)libc.a
 
-CONFIG_MAKEFILE=../../config.Makefile
-include ../../compile.Makefile
+include $(BASEDIR)/compile.Makefile

@@ -1,4 +1,4 @@
-#include "typedef.h"
+#include <stddef.h>
 
 #include "debug.h"
 #include "serial.h"
@@ -12,8 +12,7 @@ int debug_print_multiboot(Multiboot_Info* info)
 {
 	Multiboot_Memory_Map_Entry *entry;
 
-	serial_send_string("CyberOS build ");
-	serial_send_value(10, BUILD_NO);
+	serial_send_string("CyberOS version unknown");
 	serial_send_char('\n');
 
 	serial_send_string("=== Multiboot info ===\n");

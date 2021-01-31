@@ -1,13 +1,16 @@
 include config.Makefile
 
 export BINDIR
+export BASEDIR
 
-ISODIR=$(CURDIR)/iso
-LOGDIR=$(CURDIR)/logs
+BASEDIR=$(CURDIR)
+BUILDNAME=build.$(BUILD_TYPE).$(TARGET_ARCHITECTURE).$(TARGET_MACHINE)
+ISODIR=$(BASEDIR)/images
+LOGDIR=$(BASEDIR)/logs
 ifneq ($(BUILD_TYPE),none)
-	BINDIR=$(CURDIR)/build.$(TARGET_ARCHITECTURE).$(BUILD_TYPE).$(BUILD_NUMBER)
-	ISONAME=$(ISODIR)/build.$(BUILD_NUMBER).$(BUILD_TYPE).iso
-	LOGOUT=$(LOGDIR)/build.$(BUILD_NUMBER).$(BUILD_TYPE).txt
+	BINDIR=$(BASEDIR)/$(BUILDNAME)
+	ISONAME=$(ISODIR)/$(BUILDNAME).img
+	LOGOUT=$(LOGDIR)/$(BUILDNAME).txt
 endif
 
 .PHONY: clean
@@ -18,19 +21,17 @@ debug-run: debug run
 release: build-image
 release-run: release run
 
-run: scripts/run-$(TARGET_ARCHITECTURE)-$(EMULATOR).sh
+run: scripts/$(TARGET_ARCHITECTURE)/run-$(EMULATOR).sh
 	$(ECHO) RUN
 	$(MKDIR) $(LOGDIR)
-	@./scripts/run-$(TARGET_ARCHITECTURE)-$(EMULATOR).sh $(ISONAME) $(BUILD_TYPE) $(LOGOUT) $(BINDIR)
+	@./scripts/$(TARGET_ARCHITECTURE)/run-$(EMULATOR).sh $(ISONAME) $(BUILD_TYPE) $(LOGOUT) $(BINDIR)
 
 clean: $(patsubst %,%-clean,$(MODULES))
 	$(ECHO) CLEAN binaries folders
-	$(DEL) build.$(TARGET_ARCHITECTURE).debug.0
-	$(DEL) build.$(TARGET_ARCHITECTURE).release.0
+	$(DEL) build.*
 
 mrproper: clean
 	$(ECHO) CLEAN all binaries folders
-	$(DEL) build.*
 	$(DEL) $(ISODIR)
 	$(DEL) $(LOGDIR)
 
@@ -44,9 +45,8 @@ $(ISONAME): build scripts/create-grub-iso.sh
 	$(ECHO) CLEAN $(patsubst %-clean,%,$@)
 	@(cd $(patsubst %-clean,%,$@); make clean)
 
-$(BINDIR)/%: %/Makefile
-	$(ECHO) BUILD $(patsubst $(BINDIR)/%,%,$@)
-	$(MKDIR) $(patsubst %/$(notdir $@),%,$@)
-	@(cd $(patsubst $(BINDIR)/%,%,$@); make $(BUILD_TYPE) OUTDIR=$(patsubst %$(notdir $@),%,$@))
+%-build: %/Makefile
+	$(ECHO) BUILD $(patsubst %-build,%,$@)
+	@(cd $(BASEDIR)/$(patsubst %-build,%,$@); make $(BUILD_TYPE) OUTDIR=$(BINDIR)/$(dir $@))
 
-build: $(patsubst %,$(BINDIR)/%,$(MODULES))
+build: $(patsubst %,%-build,$(MODULES))

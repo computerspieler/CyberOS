@@ -1,7 +1,7 @@
 #ifndef _MULTIBOOT_H_
 #define _MULTIBOOT_H_
 
-#include "typedef.h"
+#include <stddef.h>
 
 typedef enum Multiboot_Memory_Map_Entry_Type Multiboot_Memory_Map_Entry_Type;
 

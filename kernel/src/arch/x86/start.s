@@ -44,7 +44,7 @@ start:
 	push %EAX
 	push %EBX
 
-	call main
+	call kmain
 
 # This part is just a security
 	cli

@@ -2,7 +2,7 @@
 
 if [ $# != 4 ]; then
 	echo "ERROR: Not the right amount or arguments"
-	echo "./scripts/run-x86-bochs.sh <ISO> <BUILD TYPE> <LOG OUTPUT> <BINARY FOLDER>"
+	echo "./scripts/x86/run-bochs.sh <ISO> <BUILD TYPE> <LOG OUTPUT> <BINARY FOLDER>"
 fi
 
 CONFIG_FILE="$4/bochsrc"

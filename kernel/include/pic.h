@@ -1,7 +1,7 @@
 #ifndef _PIC_H_
 #define _PIC_H_
 
-#include "typedef.h"
+#include <stddef.h>
 
 #define MASTER_PIC_COMMAND	0x20
 #define MASTER_PIC_DATA		0x21
