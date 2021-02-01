@@ -1,11 +1,12 @@
-SRCS=src/arch/$(TARGET_ARCHITECTURE)/start.s \
-	 $(wildcard src/*.c) \
-	 $(wildcard src/*.s) \
-	 $(filter-out src/arch/$(TARGET_ARCHITECTURE)/start.s,$(wildcard src/arch/$(TARGET_ARCHITECTURE)/*.s)) \
-	 $(wildcard src/arch/$(TARGET_ARCHITECTURE)/*.c)
+SRCS=arch/$(TARGET_ARCHITECTURE)/start.s \
+	 $(wildcard *.c) \
+	 $(wildcard *.s) \
+	 $(filter-out arch/$(TARGET_ARCHITECTURE)/start.s,$(wildcard arch/$(TARGET_ARCHITECTURE)/*.s)) \
+	 $(wildcard arch/$(TARGET_ARCHITECTURE)/*.c)
 
 LIBDEP=libc
 
+$(OUTDIR)kernel.bin: CCFLAGS+=-Iarch/$(TARGET_ARCHITECTURE)
 $(OUTDIR)kernel.bin: LDFLAGS+=-T linker.ld
 build: $(OUTDIR)kernel.bin
 

@@ -22,10 +22,7 @@ endif
 
 CC=@$(COMPILER_PREFIX)gcc
 CCFLAGS=-Wall -Wextra -ffreestanding -fno-exceptions -mgeneral-regs-only -c \
-	-finline-functions -Iinclude
-ifdef BASEDIR
-	CCFLAGS+=-I$(BASEDIR)/include
-endif
+	-finline-functions
 
 LD=@$(COMPILER_PREFIX)gcc
 ALTLD=@$(COMPILER_PREFIX)ld

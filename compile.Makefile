@@ -1,29 +1,29 @@
 include $(BASEDIR)/config.Makefile
 
 ifdef LIBDEP
-	CCFLAGS+=$(patsubst %,-I$(BASEDIR)/libs/%/include,$(LIBDEP))
+	CCFLAGS+=$(patsubst %,-I$(BASEDIR)/libs/%,$(LIBDEP))
 	LIBS+=$(patsubst %,$(BINDIR)/libs/%.a,$(LIBDEP))
 	LIBS_TARGET=$(patsubst %,libs/%,$(LIBDEP))
 endif
 
-DEPS=$(patsubst src/%,deps/%.d,$(SRCS))
-OBJS=$(patsubst src/%,objs/%.o,$(SRCS))
+DEPS=$(patsubst %,deps/%.d,$(SRCS))
+OBJS=$(patsubst %,objs/%.o,$(SRCS))
 
 .PRECIOUS: $(OBJS) $(DEPS)
 
-objs/%.s.o: src/%.s
+objs/%.s.o: %.s
 	$(ECHO) AS $(patsubst objs/%,%,$@)
 	$(MKDIR) $(dir $@)
 	$(AS) $(ASFLAGS) -o $@ $<
 
-objs/%.c.o: src/%.c
+objs/%.c.o: %.c
 	$(ECHO) CC $(patsubst objs/%,%,$@)
 	$(MKDIR) $(dir $@)
 	$(CC) $(CCFLAGS) -o $@ $<
 
-deps/%.c.d: src/%.c
+deps/%.c.d: %.c
 	$(MKDIR) $(dir $@)
-	$(CC) $(CCFLAGS) -M -o $@ $< -MT $(patsubst src/%.c,objs/%.c.o,$<)
+	$(CC) $(CCFLAGS) -M -o $@ $< -MT $(patsubst %.c,objs/%.c.o,$<)
 
 -include $(DEPS)
 
