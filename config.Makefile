@@ -1,9 +1,8 @@
 # User defined variables
-EMULATOR=bochs
+EMULATOR=qemu
 
 TARGET_ARCHITECTURE=x86
 TARGET_MACHINE=generic
-IMAGE_FS=fat12
 
 # Those variables shouldn't be touched unless you know what you're doing
 MODULES=kernel $(wildcard libs/*)
