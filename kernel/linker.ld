@@ -3,15 +3,13 @@ ENTRY(start)
 SECTIONS
 {
 	. = 1M;
-	KERNEL_CODE_START = .;
+	KERNEL_BASE_ADDRESS = .;
 	.text BLOCK(4K) : ALIGN(4K)
 	{
 		*(.Multiboot_Header)
 		*(.text)
 	}
-	KERNEL_CODE_END = .;
 
-	KERNEL_DATA_START = .;
 	.rodata BLOCK(4K) : ALIGN(4K)
 	{
 		*(.rodata)
@@ -27,5 +25,6 @@ SECTIONS
 		*(COMMON)
 		*(.bss)
 	}
-	KERNEL_DATA_END = .;
+	KERNEL_PAGE_SIZE = (. - KERNEL_BASE_ADDRESS) / 4K;
 }
+

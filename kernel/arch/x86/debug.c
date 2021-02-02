@@ -1,6 +1,7 @@
 #include <stddef.h>
 
 #include "debug.h"
+#include "memory.h"
 #include "serial.h"
 
 int debug_init()
@@ -36,8 +37,8 @@ int debug_print_multiboot(Multiboot_Info* info)
 		serial_send_string("\n Memory entry: Address: ");
 		serial_send_value(16, entry->address >> 32);
 		serial_send_value(16, (uint32_t) entry->address);
-		serial_send_string("; Length: ");
-		serial_send_value(10, entry->length);
+		serial_send_string("; Length (in pages): ");
+		serial_send_value(10, entry->length / MEMORY_PAGE_SIZE);
 		serial_send_string("; Type: ");
 		serial_send_value(16, entry->type);
 	}

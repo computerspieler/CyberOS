@@ -1,60 +1,43 @@
-#include "asm.h"
-#include "gdt.h"
+#include <stddef.h>
+
 #include "memory.h"
-#include "multiboot.h"
+#include "segments.h"
 #include "serial.h"
-#include "tss.h"
 
-#define XSTR(x) STR(x)
-#define STR(x) #x
+extern uint32_t KERNEL_BASE_ADDRESS;
+extern uint32_t KERNEL_PAGE_SIZE;
 
-#define NB_GDT_ENTRIES 6
+static uint32_t nb_pages_allocated = 0;
 
-static Task_State_Structure kernel_tss;
-static GDT_Descriptor gdt_descriptor;
-static GDT_Entry gdt_entries[NB_GDT_ENTRIES];
-
-void memory_init(Multiboot_Info* info)
+void memory_init()
 {
-	GDT_Descriptor* old_descriptor;
+	nb_pages_allocated = &KERNEL_PAGE_SIZE;
+}
 
-	debug_print_multiboot(info);
-	GDT_FETCH_DESCRIPTOR(old_descriptor);
-	debug_print_gdt(old_descriptor);
+void* memory_find_available_page(Multiboot_Info* info)
+{
+	void* output = NULL;
+	int nb_pages_skipped = 0;
+	Multiboot_Memory_Map_Entry *entry;
 
-	// Create the new segments for the kernel
-	gdt_descriptor.address = gdt_entries;
-	gdt_descriptor.size = NB_GDT_ENTRIES * sizeof(GDT_Entry);
+	for(entry = (Multiboot_Memory_Map_Entry*) info->mmap_address;
+		entry < (Multiboot_Memory_Map_Entry*)(info->mmap_address + info->mmap_length);
+		entry = (Multiboot_Memory_Map_Entry*) ((uint32_t)entry + entry->size + sizeof(entry->size)))
+	{
+		if(entry->type != Available_Memory || entry->address < &KERNEL_BASE_ADDRESS)
+			continue;
 
-	// Create kernel's TSS
-	kernel_tss.ss0 = 2 * sizeof(GDT_Entry);			// Kernel's data segment
-	kernel_tss.esp0 = 0;							// Stack pointer value during system call, unset for now
-	kernel_tss.iopb = sizeof(Task_State_Structure);	// There's no plan to use io bitmap for now
+		if((entry->length / MEMORY_PAGE_SIZE) < nb_pages_allocated)
+		{
+			nb_pages_skipped += (entry->length / MEMORY_PAGE_SIZE);
+			continue;
+		}
 
-	gdt_entries[0] = GDT_create_entry(0, 0, 0, 0);
-	/* Kernel Code Entry */
-	gdt_entries[1] = GDT_create_code_selector(0, 0xFFFFF, GDT_FLAGS_PAGE_BLOCK | GDT_FLAGS_32_BITS_SELECTOR, 0);
-	/* Kernel Data Entry */
-	gdt_entries[2] = GDT_create_data_selector(0, 0xFFFFF, GDT_FLAGS_PAGE_BLOCK | GDT_FLAGS_32_BITS_SELECTOR, 0);
-	/* Kernel TSS */
-	gdt_entries[3] = GDT_create_task_segment_selector(&kernel_tss, 0);
-	/* Userspace Code Entry */
-	gdt_entries[4] = GDT_create_code_selector(0, 0xFFFFF, GDT_FLAGS_PAGE_BLOCK | GDT_FLAGS_32_BITS_SELECTOR, 3);
-	/* Userspace Data Entry */
-	gdt_entries[5] = GDT_create_data_selector(0, 0xFFFFF, GDT_FLAGS_PAGE_BLOCK | GDT_FLAGS_32_BITS_SELECTOR, 3);
-	
-	serial_send_string("[INFO] Push a new GDT\n");
-	debug_print_gdt(&gdt_descriptor);
+		output = (nb_pages_allocated - nb_pages_skipped) * MEMORY_PAGE_SIZE + entry->address;
+		nb_pages_allocated ++;
+		break;	
+	}
 
-	GDT_PUSH_DESCRIPTOR(&gdt_descriptor);
-
-	// Reload segments
-	asm("mov $" XSTR(KERNEL_DATA_SEGMENT) ", %ax");
-	asm("mov %ax, %ds");
-	asm("mov %ax, %es");
-	asm("mov %ax, %fs");
-	asm("mov %ax, %gs");
-	asm("mov %ax, %ss");
-	asm("ljmp $" XSTR(KERNEL_CODE_SEGMENT) ", $next");
-	asm("next:");
+	// TODO: Add an exception handler
+	return output;
 }

@@ -1,7 +1,7 @@
 #include "asm.h"
 #include "idt.h"
 #include "interrupt.h"
-#include "memory.h"
+#include "segments.h"
 #include "pic.h"
 #include "serial.h"
 
@@ -34,9 +34,12 @@ void interrupt_init()
 
 void general_interrupt_handler(uint32_t irq_id)
 {
-	serial_send_string("IRQ no ");
-	serial_send_value(10, irq_id);
-	serial_send_char('\n');
+	if(irq_id != 32)
+	{
+		serial_send_string("IRQ no ");
+		serial_send_value(10, irq_id);
+		serial_send_char('\n');
+	}
 
 	if(irq_id >= MASTER_PIC_OFFSET && irq_id <= MASTER_PIC_OFFSET + 7)
 		PIC_send_EOI(true, false);
