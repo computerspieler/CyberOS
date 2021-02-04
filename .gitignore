@@ -1,8 +1,7 @@
-build.*
+build*
+binaries*
 toolchain
 tmp
 bx_enh_dbg.ini
-deps
-objs
-iso
+images
 logs

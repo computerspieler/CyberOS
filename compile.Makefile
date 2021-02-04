@@ -2,26 +2,28 @@ include $(BASEDIR)/config.Makefile
 
 ifdef LIBDEP
 	CCFLAGS+=$(patsubst %,-I$(BASEDIR)/libs/%,$(LIBDEP))
-	LIBS+=$(patsubst %,$(BINDIR)/libs/%.a,$(LIBDEP))
+	LIBS+=$(patsubst %,$(BUILDDIR)/libs/%.a,$(LIBDEP))
 	LIBS_TARGET=$(patsubst %,libs/%,$(LIBDEP))
 endif
 
-DEPS=$(patsubst %,deps/%.d,$(SRCS))
-OBJS=$(patsubst %,objs/%.o,$(SRCS))
+LOCALBINDIR=$(patsubst $(BASEDIR)%,$(BINDIR)%,$(CURDIR))
+
+DEPS=$(patsubst %,$(LOCALBINDIR)/%.d,$(SRCS))
+OBJS=$(patsubst %,$(LOCALBINDIR)/%.o,$(SRCS))
 
 .PRECIOUS: $(OBJS) $(DEPS)
 
-objs/%.s.o: %.s
-	$(ECHO) AS $(patsubst objs/%,%,$@)
+$(LOCALBINDIR)/%.s.o: %.s
+	$(ECHO) AS $(notdir $@)
 	$(MKDIR) $(dir $@)
 	$(AS) $(ASFLAGS) -o $@ $<
 
-objs/%.c.o: %.c
-	$(ECHO) CC $(patsubst objs/%,%,$@)
+$(LOCALBINDIR)/%.c.o: %.c
+	$(ECHO) CC $(notdir $@)
 	$(MKDIR) $(dir $@)
 	$(CC) $(CCFLAGS) -o $@ $<
 
-deps/%.c.d: %.c
+$(LOCALBINDIR)/%.c.d: %.c
 	$(MKDIR) $(dir $@)
 	$(CC) $(CCFLAGS) -M -o $@ $< -MT $(patsubst %.c,objs/%.c.o,$<)
 
@@ -39,11 +41,8 @@ deps/%.c.d: %.c
 
 libs/%: $(BASEDIR)/libs/%/Makefile
 	$(ECHO) BUILD $@
-	@(cd $(BASEDIR)/$@; make $(BUILD_TYPE) OUTDIR=$(BINDIR)/$(dir $@))
+	@(cd $(BASEDIR)/$@; make $(BUILD_TYPE) OUTDIR=$(BUILDDIR)/$(dir $@))
 
 debug: build
 release: build
 
-clean:
-	$(DEL) objs
-	$(DEL) deps
